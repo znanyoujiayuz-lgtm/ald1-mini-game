@@ -16,7 +16,6 @@
             font-family: 'PingFang SC', 'Microsoft YaHei', sans-serif;
             user-select: none;
             overflow: hidden;
-            /* 📱 优化手机连点体验，防止双击网页放大 */
             touch-action: manipulation;
 
             /* ===== 背景图设置 ===== */
@@ -33,7 +32,6 @@
             margin-top: 30px;    
             margin-bottom: 5px;  
             
-            /* 流光金色渐变 */
             background: linear-gradient(
                 90deg, 
                 #bf953f 0%, 
@@ -46,18 +44,15 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             
-            /* 组合动画：流光扫过 + 金光呼吸发光 */
             animation: shine 2.5s linear infinite, goldGlow 1.5s ease-in-out infinite alternate;
         }
 
-        /* 文字扫光动画 */
         @keyframes shine {
             to {
                 background-position: 200% center;
             }
         }
 
-        /* 金黄光芒呼吸发光效果 */
         @keyframes goldGlow {
             0% {
                 filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.6)) 
@@ -108,20 +103,18 @@
             background: rgba(0, 180, 255, 0.5);
         }
 
-        /* 主角色容器：已往上提，避免遮挡背景 */
+        /* 主角色容器：整体向下平移一点 */
         .pig-container {
             position: relative;
             cursor: pointer;
-            margin-top: 25px; 
+            margin-top: 55px; 
             transition: transform 0.1s ease;
         }
 
-        /* 点击时缩放按压效果 */
         .pig-container:active {
             transform: scale(1.1, 0.9) translateY(5px);
         }
 
-        /* 主角色原图样式：适度缩小尺寸 */
         .character-img {
             max-width: 180px;
             max-height: 180px;
@@ -131,7 +124,7 @@
             transition: all 0.3s ease;
         }
 
-        /* 🌟 金色大爆炸角色震撼缩放特效 */
+        /* 🌟 金色大爆炸角色特效 */
         .gold-explode {
             animation: characterExplode 0.85s ease-out forwards;
         }
@@ -227,7 +220,6 @@
             pointer-events: none;
         }
 
-        /* 💩 居中排版 */
         .poop-content {
             position: relative;
             display: inline-flex;
@@ -238,7 +230,6 @@
             filter: drop-shadow(0 6px 12px rgba(0,0,0,0.4));
         }
 
-        /* 🏷️ 名字标签 */
         .poop-name {
             position: absolute;
             bottom: 100%;
@@ -259,7 +250,7 @@
             z-index: 11;
         }
 
-        /* 📱 针对小屏幕手机的专项自适应适配 */
+        /* 📱 小屏幕手机适配 */
         @media (max-width: 480px), (max-height: 700px) {
             h1 {
                 font-size: 28px;
@@ -273,7 +264,7 @@
                 max-height: 150px;
             }
             .pig-container {
-                margin-top: 15px;
+                margin-top: 35px;
             }
             .poop-content {
                 font-size: 90px;
@@ -287,16 +278,13 @@
 </head>
 <body>
 
-    <!-- 闪闪发光动态标题 -->
     <h1>送给驶妈妈们的礼物</h1>
     
-    <!-- 拉驶记录 + 冲厕所按钮 -->
     <div class="counter">
         <span>拉驶记录：<span id="count">0</span> 坨 💩</span>
         <button class="reset-btn" id="resetBtn">🚽 冲厕所</button>
     </div>
 
-    <!-- 主角色图片容器 -->
     <div class="pig-container" id="pig">
         <img id="characterImg" class="character-img" src="拉驶中.png" alt="角色图片">
     </div>
@@ -309,7 +297,6 @@
 
         let count = 0;
 
-        // 7位成员名字
         const names = [
             "李相沅", 
             "李理悟", 
@@ -320,7 +307,6 @@
             "贺鑫隆"
         ];
 
-        // ===== 🎵 成员音量配置 =====
         const volumeMap = {
             "李相沅": 0.85,
             "李理悟": 0.85,
@@ -332,7 +318,6 @@
             "ald1": 0.85
         };
 
-        // 播放音频通用函数
         function playAudioFile(keyName, filename) {
             const audio = new Audio(filename);
             
@@ -348,7 +333,6 @@
             });
         }
 
-        // 1. 点击图像发💩
         pig.addEventListener('click', () => {
             characterImg.src = '拉驶中.png';
 
@@ -376,7 +360,8 @@
             `;
 
             const angle = Math.random() * Math.PI * 2;
-            const distance = 180 + Math.random() * 220; // 适当缩减散射半径，适配手机屏幕
+            // 👈 这里的 100 + Math.random() * 120 缩小了飞出半径
+            const distance = 100 + Math.random() * 120; 
             const targetX = Math.cos(angle) * distance;
             const targetY = Math.sin(angle) * distance;
             const rotateDeg = (Math.random() - 0.5) * 720;
@@ -438,7 +423,6 @@
             }, 1600);
         });
 
-        // 2. 点击“冲厕所”
         resetBtn.addEventListener('click', () => {
             count = 0;
             countDisplay.innerText = count;
