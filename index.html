@@ -103,7 +103,7 @@
             background: rgba(0, 180, 255, 0.5);
         }
 
-        /* 主角色容器：整体向下平移一点 */
+        /* 主角色容器：往下挪了一点点 */
         .pig-container {
             position: relative;
             cursor: pointer;
@@ -318,19 +318,33 @@
             "ald1": 0.85
         };
 
-        function playAudioFile(keyName, filename) {
-            const audio = new Audio(filename);
-            
-            if (volumeMap[keyName] !== undefined) {
-                audio.volume = volumeMap[keyName];
-            } else {
-                audio.volume = 1.0;
-            }
+        // 🌟 音频预加载池（解决移动端音画不同步/延迟）
+        const audioCache = {};
 
-            audio.currentTime = 0;
-            audio.play().catch(err => {
-                console.log(`播放 ${filename} 失败，请确认文件路径及文件名是否正确:`, err);
+        function preloadAudios() {
+            names.forEach(name => {
+                const audio = new Audio(`${name}.mp3`);
+                audio.preload = 'auto';
+                if (volumeMap[name] !== undefined) audio.volume = volumeMap[name];
+                audioCache[name] = audio;
             });
+            const resetAudio = new Audio('ald1.mp3');
+            resetAudio.preload = 'auto';
+            if (volumeMap['ald1'] !== undefined) resetAudio.volume = volumeMap['ald1'];
+            audioCache['ald1'] = resetAudio;
+        }
+
+        // 页面初始化时即预加载音频
+        preloadAudios();
+
+        // 播放函数：利用 cloneNode 实现连续点击重叠秒播
+        function playAudioFile(keyName) {
+            const cachedAudio = audioCache[keyName];
+            if (cachedAudio) {
+                const sound = cachedAudio.cloneNode();
+                sound.volume = cachedAudio.volume;
+                sound.play().catch(err => console.log('播放失败:', err));
+            }
         }
 
         pig.addEventListener('click', () => {
@@ -342,7 +356,8 @@
             const randomIndex = Math.floor(Math.random() * names.length);
             const chosenName = names[randomIndex];
 
-            playAudioFile(chosenName, `${chosenName}.mp3`);
+            // 秒播音频
+            playAudioFile(chosenName);
 
             const poop = document.createElement('div');
             poop.className = 'poop';
@@ -360,7 +375,7 @@
             `;
 
             const angle = Math.random() * Math.PI * 2;
-            // 👈 这里的 100 + Math.random() * 120 缩小了飞出半径
+            // 🌟 缩小弹射距离 (100 ~ 220px)
             const distance = 100 + Math.random() * 120; 
             const targetX = Math.cos(angle) * distance;
             const targetY = Math.sin(angle) * distance;
@@ -452,7 +467,7 @@
                 }, 800);
             }
 
-            playAudioFile('ald1', 'ald1.mp3');
+            playAudioFile('ald1');
         });
     </script>
 </body>
